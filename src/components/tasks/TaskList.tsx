@@ -43,6 +43,7 @@ export default function TaskList({ tasks, inputRef, onAdd, onToggle, onDelete, o
           onChange={e => setDraft(e.target.value)}
           onKeyDown={e => e.key === "Enter" && submit()}
           placeholder="New task… press Enter to add"
+          dir="auto"
           className="flex-1 text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400"
         />
         {draft.trim() && (

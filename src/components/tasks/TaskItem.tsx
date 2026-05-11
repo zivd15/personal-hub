@@ -74,6 +74,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") cancel(); }}
+              dir="auto"
               className="text-sm outline-none border-b border-indigo-500 pb-0.5 w-full bg-transparent"
             />
             <div className="flex items-center gap-3 flex-wrap">
@@ -92,6 +93,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
           <>
             <p
               onClick={() => !task.completed && startEditing()}
+              dir="auto"
               className={`text-sm leading-snug ${
                 task.completed ? "line-through text-gray-400" : "text-gray-900 cursor-text"
               }`}

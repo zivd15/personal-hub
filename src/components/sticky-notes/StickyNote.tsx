@@ -73,6 +73,7 @@ export default function StickyNote({ note, autoEdit, onUpdate, onDelete, onColor
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onBlur={commit}
+          dir="auto"
           className="flex-1 bg-transparent resize-none outline-none text-sm text-gray-800 leading-relaxed placeholder:text-gray-400 w-full"
           placeholder="Write something…"
           rows={5}
@@ -80,6 +81,7 @@ export default function StickyNote({ note, autoEdit, onUpdate, onDelete, onColor
       ) : (
         <p
           onClick={startEditing}
+          dir="auto"
           className="flex-1 text-sm text-gray-800 leading-relaxed cursor-text whitespace-pre-wrap break-words min-h-[4rem]"
         >
           {note.content || <span className="text-gray-400 italic">Click to edit…</span>}
