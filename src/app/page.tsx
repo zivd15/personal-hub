@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { ActiveView } from "@/types";
 import { useNotes } from "@/hooks/useNotes";
 import { useTasks } from "@/hooks/useTasks";
@@ -12,16 +12,22 @@ import TaskList from "@/components/tasks/TaskList";
 
 export default function Dashboard() {
   const [view, setView] = useState<ActiveView>("tasks");
-  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [newNoteId, setNewNoteId] = useState<string | null>(null);
+  const taskInputRef = useRef<HTMLInputElement>(null);
 
   const { notes, loading: notesLoading, addNote, updateNote, deleteNote, changeNoteColor } = useNotes();
   const { tasks, loading: tasksLoading, addTask, toggleTask, updateTask, deleteTask } = useTasks();
 
   const loading = view === "notes" ? notesLoading : tasksLoading;
 
-  const handleAddTask = async () => {
-    const id = await addTask();
-    if (id) setEditingTaskId(id);
+  const handleAddNote = async () => {
+    const id = await addNote("yellow");
+    setNewNoteId(id);
+    setTimeout(() => setNewNoteId(null), 1000);
+  };
+
+  const handleAddTaskFocus = () => {
+    taskInputRef.current?.focus();
   };
 
   if (!isConfigured) {
@@ -49,7 +55,7 @@ export default function Dashboard() {
       <Sidebar active={view} onChange={setView} />
 
       <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-        <Header active={view} onAdd={view === "notes" ? () => addNote("yellow") : handleAddTask} />
+        <Header active={view} onAdd={view === "notes" ? handleAddNote : handleAddTaskFocus} />
 
         <main className="flex-1 overflow-y-auto px-6 py-6 pb-24 md:pb-6">
           {loading ? (
@@ -59,6 +65,7 @@ export default function Dashboard() {
           ) : view === "notes" ? (
             <StickyNoteBoard
               notes={notes}
+              newNoteId={newNoteId}
               onUpdate={updateNote}
               onDelete={deleteNote}
               onColorChange={changeNoteColor}
@@ -66,8 +73,8 @@ export default function Dashboard() {
           ) : (
             <TaskList
               tasks={tasks}
-              editingId={editingTaskId}
-              onEditingChange={setEditingTaskId}
+              inputRef={taskInputRef}
+              onAdd={addTask}
               onToggle={(id) => {
                 const task = tasks.find((t) => t.id === id);
                 if (task) toggleTask(id, !task.completed);

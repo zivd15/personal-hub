@@ -5,12 +5,13 @@ import StickyNoteCard from "./StickyNote";
 
 interface Props {
   notes: StickyNote[];
+  newNoteId: string | null;
   onUpdate: (id: string, content: string) => void;
   onDelete: (id: string) => void;
   onColorChange: (id: string, color: NoteColor) => void;
 }
 
-export default function StickyNoteBoard({ notes, onUpdate, onDelete, onColorChange }: Props) {
+export default function StickyNoteBoard({ notes, newNoteId, onUpdate, onDelete, onColorChange }: Props) {
   if (notes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center gap-3 text-gray-500">
@@ -29,6 +30,7 @@ export default function StickyNoteBoard({ notes, onUpdate, onDelete, onColorChan
         <div key={note.id} className="break-inside-avoid">
           <StickyNoteCard
             note={note}
+            autoEdit={note.id === newNoteId}
             onUpdate={onUpdate}
             onDelete={onDelete}
             onColorChange={onColorChange}

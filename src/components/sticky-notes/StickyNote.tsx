@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { StickyNote as StickyNoteType, NoteColor } from "@/types";
 
 const COLOR_CLASSES: Record<NoteColor, string> = {
@@ -15,14 +15,19 @@ const COLORS: NoteColor[] = ["yellow", "blue", "green", "pink", "purple"];
 
 interface Props {
   note: StickyNoteType;
+  autoEdit?: boolean;
   onUpdate: (id: string, content: string) => void;
   onDelete: (id: string) => void;
   onColorChange: (id: string, color: NoteColor) => void;
 }
 
-export default function StickyNote({ note, onUpdate, onDelete, onColorChange }: Props) {
+export default function StickyNote({ note, autoEdit, onUpdate, onDelete, onColorChange }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(note.content);
+
+  useEffect(() => {
+    if (autoEdit) setEditing(true);
+  }, [autoEdit]);
 
   const startEditing = () => {
     setDraft(note.content);
@@ -31,13 +36,11 @@ export default function StickyNote({ note, onUpdate, onDelete, onColorChange }: 
 
   const commit = () => {
     setEditing(false);
-    if (draft !== note.content) {
-      onUpdate(note.id, draft);
-    }
+    if (draft !== note.content) onUpdate(note.id, draft);
   };
 
   return (
-    <div className={`${COLOR_CLASSES[note.color]} rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow group min-h-36`}>
+    <div className={`${COLOR_CLASSES[note.color]} rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-all group min-h-36`}>
       <div className="flex items-center justify-between opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
         <div className="flex gap-1">
           {COLORS.map((c) => (
@@ -77,7 +80,7 @@ export default function StickyNote({ note, onUpdate, onDelete, onColorChange }: 
       ) : (
         <p
           onClick={startEditing}
-          className="flex-1 text-sm text-gray-800 leading-relaxed cursor-text whitespace-pre-wrap break-words"
+          className="flex-1 text-sm text-gray-800 leading-relaxed cursor-text whitespace-pre-wrap break-words min-h-[4rem]"
         >
           {note.content || <span className="text-gray-400 italic">Click to edit…</span>}
         </p>
