@@ -88,6 +88,11 @@ interface GroceryItemRow {
   status: string;
 }
 
+// ── Constants ────────────────────────────────────────────────────────────────
+
+/** Maximum characters shown per note in the *notes* listing. */
+const MAX_NOTE_PREVIEW_LENGTH = 100;
+
 // ── Help text ────────────────────────────────────────────────────────────────
 
 const HELP = `*Personal Hub Bot* 🤖
@@ -273,7 +278,7 @@ async function listNotes(env: Env): Promise<string> {
 
   if (rows.length === 0) return "📝 No notes yet.";
 
-  const lines = rows.map((n, i) => `${i + 1}. ${n.content.slice(0, 100)}`);
+  const lines = rows.map((n, i) => `${i + 1}. ${n.content.slice(0, MAX_NOTE_PREVIEW_LENGTH)}`);
   return `📝 *Recent notes:*\n${lines.join("\n")}`;
 }
 
@@ -336,6 +341,14 @@ async function addShopItem(raw: string, env: Env): Promise<string> {
   let quantity: string | null = null;
   let unit: string | null = null;
 
+  // Parse optional leading quantity and unit from the raw input.
+  // Pattern: <number> [<unit>] <name>
+  //   group 1 — quantity  (integer or decimal, e.g. "2" or "1.5")
+  //   group 2 — unit      (letters only, optional, e.g. "kg", "l")
+  //   group 3 — item name (remainder, e.g. "flour")
+  // Examples: "2 kg flour" → qty=2, unit=kg, name=flour
+  //           "3 apples"   → qty=3, unit=null, name=apples
+  //           "milk"       → no match, treated as name only
   const match = raw.match(/^(\d+(?:\.\d+)?)\s*([a-zA-Z]+)?\s+(.+)$/);
   if (match) {
     quantity = match[1];
