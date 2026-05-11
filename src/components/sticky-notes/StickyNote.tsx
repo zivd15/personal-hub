@@ -22,10 +22,22 @@ interface Props {
 
 export default function StickyNote({ note, onUpdate, onDelete, onColorChange }: Props) {
   const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(note.content);
+
+  const startEditing = () => {
+    setDraft(note.content);
+    setEditing(true);
+  };
+
+  const commit = () => {
+    setEditing(false);
+    if (draft !== note.content) {
+      onUpdate(note.id, draft);
+    }
+  };
 
   return (
     <div className={`${COLOR_CLASSES[note.color]} rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow group min-h-36`}>
-      {/* toolbar — always visible on touch, hover on desktop */}
       <div className="flex items-center justify-between opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
         <div className="flex gap-1">
           {COLORS.map((c) => (
@@ -55,16 +67,16 @@ export default function StickyNote({ note, onUpdate, onDelete, onColorChange }: 
       {editing ? (
         <textarea
           autoFocus
-          value={note.content}
-          onChange={(e) => onUpdate(note.id, e.target.value)}
-          onBlur={() => setEditing(false)}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
           className="flex-1 bg-transparent resize-none outline-none text-sm text-gray-800 leading-relaxed placeholder:text-gray-400 w-full"
           placeholder="Write something…"
           rows={5}
         />
       ) : (
         <p
-          onClick={() => setEditing(true)}
+          onClick={startEditing}
           className="flex-1 text-sm text-gray-800 leading-relaxed cursor-text whitespace-pre-wrap break-words"
         >
           {note.content || <span className="text-gray-400 italic">Click to edit…</span>}
