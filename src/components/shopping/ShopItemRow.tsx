@@ -62,7 +62,15 @@ export default function ShopItemRow({ item, onCycleStatus, onDelete, onUpdate }:
             />
             <div className="flex items-center gap-2">
               <input value={qty} onChange={e => setQty(e.target.value)} placeholder="Qty" className="text-xs outline-none border-b border-gray-200 pb-0.5 bg-transparent w-12 placeholder:text-gray-300 focus:border-indigo-400" />
-              <input dir="auto" value={unit} onChange={e => setUnit(e.target.value)} placeholder="Unit" className="text-xs outline-none border-b border-gray-200 pb-0.5 bg-transparent w-20 placeholder:text-gray-300 focus:border-indigo-400" />
+              <select aria-label="Unit" value={unit} onChange={e => setUnit(e.target.value)} className="text-xs outline-none border-b border-gray-200 pb-0.5 bg-transparent text-gray-600 cursor-pointer focus:border-indigo-400">
+                <option value="">Unit</option>
+                <option value="kg">kg</option>
+                <option value="g">g</option>
+                <option value="L">L</option>
+                <option value="ml">ml</option>
+                <option value="pack">pack</option>
+                <option value="pcs">pcs</option>
+              </select>
               <button type="button" onClick={commit} className="text-xs text-indigo-600 font-medium hover:underline cursor-pointer ml-1">Save</button>
               <button type="button" onClick={cancel} className="text-xs text-gray-400 hover:underline cursor-pointer">Cancel</button>
             </div>

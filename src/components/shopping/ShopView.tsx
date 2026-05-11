@@ -44,9 +44,9 @@ export default function ShopView({ itemInputRef }: Props) {
   const handleAddItem = () => {
     const name = itemDraft.trim();
     if (!name) return;
-    addItem(name, itemQty.trim() || undefined, itemUnit.trim() || undefined);
+    addItem(name, itemQty.trim() || undefined, itemUnit || undefined);
     setItemDraft(""); setItemQty(""); setItemUnit("");
-    itemInputRef.current?.focus();
+    setTimeout(() => itemInputRef.current?.focus(), 0);
   };
 
   const handleCopy = () => {
@@ -169,7 +169,7 @@ export default function ShopView({ itemInputRef }: Props) {
               value={itemDraft}
               dir="auto"
               onChange={e => setItemDraft(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && handleAddItem()}
+              onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleAddItem(); } }}
               placeholder="Add item… press Enter"
               className="flex-1 text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400"
             />
@@ -179,12 +179,27 @@ export default function ShopView({ itemInputRef }: Props) {
               </button>
             )}
           </div>
-          {itemDraft.trim() && (
-            <div className="flex gap-3 pl-6">
-              <input value={itemQty} onChange={e => setItemQty(e.target.value)} placeholder="Qty" className="text-xs outline-none border-b border-gray-200 pb-0.5 bg-transparent w-14 placeholder:text-gray-300 focus:border-indigo-400" />
-              <input dir="auto" value={itemUnit} onChange={e => setItemUnit(e.target.value)} placeholder="kg, L, pcs…" className="text-xs outline-none border-b border-gray-200 pb-0.5 bg-transparent w-24 placeholder:text-gray-300 focus:border-indigo-400" />
-            </div>
-          )}
+          <div className="flex gap-3 pl-6">
+            <input
+              value={itemQty}
+              onChange={e => setItemQty(e.target.value)}
+              placeholder="Qty"
+              className="text-xs outline-none border-b border-gray-200 pb-0.5 bg-transparent w-14 placeholder:text-gray-300 focus:border-indigo-400"
+            />
+            <select
+              value={itemUnit}
+              onChange={e => setItemUnit(e.target.value)}
+              className="text-xs outline-none border-b border-gray-200 pb-0.5 bg-transparent text-gray-600 cursor-pointer focus:border-indigo-400"
+            >
+              <option value="">Unit</option>
+              <option value="kg">kg</option>
+              <option value="g">g</option>
+              <option value="L">L</option>
+              <option value="ml">ml</option>
+              <option value="pack">pack</option>
+              <option value="pcs">pcs</option>
+            </select>
+          </div>
         </div>
       )}
 
