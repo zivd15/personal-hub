@@ -4,14 +4,14 @@ export interface StickyNote {
   id: string;
   content: string;
   color: NoteColor;
-  updatedAt: string;
+  updated_at: string;
 }
 
 export interface Task {
   id: string;
   text: string;
   completed: boolean;
-  dueDate: string | null;
+  due_date: string | null;
 }
 
 export type ActiveView = "notes" | "tasks";

@@ -4,11 +4,11 @@ import { useState } from "react";
 import type { StickyNote as StickyNoteType, NoteColor } from "@/types";
 
 const COLOR_CLASSES: Record<NoteColor, string> = {
-  yellow: "bg-[--color-note-yellow]",
-  blue:   "bg-[--color-note-blue]",
-  green:  "bg-[--color-note-green]",
-  pink:   "bg-[--color-note-pink]",
-  purple: "bg-[--color-note-purple]",
+  yellow: "bg-yellow-100",
+  blue:   "bg-blue-100",
+  green:  "bg-green-100",
+  pink:   "bg-pink-100",
+  purple: "bg-purple-100",
 };
 
 const COLORS: NoteColor[] = ["yellow", "blue", "green", "pink", "purple"];
@@ -24,23 +24,25 @@ export default function StickyNote({ note, onUpdate, onDelete, onColorChange }: 
   const [editing, setEditing] = useState(false);
 
   return (
-    <div
-      className={`${COLOR_CLASSES[note.color]} rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow group min-h-36`}
-    >
-      {/* toolbar — always visible on touch, hover-revealed on desktop */}
+    <div className={`${COLOR_CLASSES[note.color]} rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow group min-h-36`}>
+      {/* toolbar — always visible on touch, hover on desktop */}
       <div className="flex items-center justify-between opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
         <div className="flex gap-1">
           {COLORS.map((c) => (
             <button
               key={c}
+              type="button"
+              aria-label={`Set color ${c}`}
               onClick={() => onColorChange(note.id, c)}
-              className={`w-3.5 h-3.5 rounded-full border-2 cursor-pointer transition-transform hover:scale-110 ${
+              className={`w-3.5 h-3.5 rounded-full border-2 cursor-pointer transition-transform hover:scale-110 ${COLOR_CLASSES[c]} ${
                 note.color === c ? "border-gray-500" : "border-transparent"
-              } ${COLOR_CLASSES[c]}`}
+              }`}
             />
           ))}
         </div>
         <button
+          type="button"
+          aria-label="Delete note"
           onClick={() => onDelete(note.id)}
           className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
         >
@@ -50,7 +52,6 @@ export default function StickyNote({ note, onUpdate, onDelete, onColorChange }: 
         </button>
       </div>
 
-      {/* content */}
       {editing ? (
         <textarea
           autoFocus
@@ -71,7 +72,7 @@ export default function StickyNote({ note, onUpdate, onDelete, onColorChange }: 
       )}
 
       <p className="text-[10px] text-gray-400 mt-auto">
-        {new Date(note.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+        {new Date(note.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
       </p>
     </div>
   );

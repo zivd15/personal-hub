@@ -18,41 +18,32 @@ function formatDue(date: string): { label: string; urgent: boolean } {
   if (diff < 0) return { label: "Overdue", urgent: true };
   if (diff === 0) return { label: "Today", urgent: true };
   if (diff === 1) return { label: "Tomorrow", urgent: false };
-  return {
-    label: due.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    urgent: false,
-  };
+  return { label: due.toLocaleDateString("en-US", { month: "short", day: "numeric" }), urgent: false };
 }
 
 export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(task.text);
-  const [dueDate, setDueDate] = useState(task.dueDate ?? "");
+  const [dueDate, setDueDate] = useState(task.due_date ?? "");
 
   const commit = () => {
     onUpdate(task.id, text.trim() || task.text, dueDate || null);
     setEditing(false);
   };
 
-  const due = task.dueDate ? formatDue(task.dueDate) : null;
+  const due = task.due_date ? formatDue(task.due_date) : null;
 
   return (
-    <div
-      className={`group flex items-start gap-3 px-4 py-3.5 rounded-xl border transition-colors ${
-        task.completed
-          ? "border-[--color-border] bg-gray-50"
-          : "border-[--color-border] bg-white hover:border-gray-300"
-      }`}
-    >
+    <div className={`group flex items-start gap-3 px-4 py-3.5 rounded-xl border transition-colors ${
+      task.completed ? "border-gray-200 bg-gray-50" : "border-gray-200 bg-white hover:border-gray-300"
+    }`}>
       {/* Checkbox */}
       <button
         type="button"
         aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
         onClick={() => onToggle(task.id)}
         className={`mt-0.5 w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all cursor-pointer ${
-          task.completed
-            ? "bg-[--color-accent] border-[--color-accent]"
-            : "border-gray-300 hover:border-[--color-accent]"
+          task.completed ? "bg-indigo-600 border-indigo-600" : "border-gray-300 hover:border-indigo-600"
         }`}
       >
         {task.completed && (
@@ -72,7 +63,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && commit()}
-              className="text-sm outline-none border-b border-[--color-accent] pb-0.5 w-full bg-transparent"
+              className="text-sm outline-none border-b border-indigo-600 pb-0.5 w-full bg-transparent"
             />
             <div className="flex items-center gap-2">
               <input
@@ -80,22 +71,10 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
                 aria-label="Due date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="text-xs text-[--color-muted] outline-none bg-transparent cursor-pointer"
+                className="text-xs text-gray-500 outline-none bg-transparent cursor-pointer"
               />
-              <button
-                type="button"
-                onClick={commit}
-                className="text-xs text-[--color-accent] font-medium cursor-pointer hover:underline"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => { setText(task.text); setDueDate(task.dueDate ?? ""); setEditing(false); }}
-                className="text-xs text-[--color-muted] cursor-pointer hover:underline"
-              >
-                Cancel
-              </button>
+              <button type="button" onClick={commit} className="text-xs text-indigo-600 font-medium cursor-pointer hover:underline">Save</button>
+              <button type="button" onClick={() => { setText(task.text); setDueDate(task.due_date ?? ""); setEditing(false); }} className="text-xs text-gray-500 cursor-pointer hover:underline">Cancel</button>
             </div>
           </div>
         ) : (
@@ -103,21 +82,15 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
             <p
               onClick={() => !task.completed && setEditing(true)}
               className={`text-sm leading-snug transition-colors ${
-                task.completed
-                  ? "line-through text-[--color-muted]"
-                  : "text-[--color-foreground] cursor-text"
+                task.completed ? "line-through text-gray-400" : "text-gray-900 cursor-text"
               }`}
             >
               {task.text}
             </p>
             {due && (
-              <span
-                className={`inline-block mt-1 text-[11px] font-medium px-1.5 py-0.5 rounded-md ${
-                  due.urgent
-                    ? "bg-red-50 text-red-500"
-                    : "bg-gray-100 text-[--color-muted]"
-                }`}
-              >
+              <span className={`inline-block mt-1 text-[11px] font-medium px-1.5 py-0.5 rounded-md ${
+                due.urgent ? "bg-red-50 text-red-500" : "bg-gray-100 text-gray-500"
+              }`}>
                 {due.label}
               </span>
             )}
@@ -128,22 +101,12 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
       {/* Actions */}
       {!editing && (
         <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
-          <button
-            type="button"
-            aria-label="Edit task"
-            onClick={() => setEditing(true)}
-            className="p-1 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-          >
+          <button type="button" aria-label="Edit task" onClick={() => setEditing(true)} className="p-1 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-3.5 h-3.5">
               <path d="M15.232 5.232l3.536 3.536M9 11l6.586-6.586a2 2 0 012.828 2.828L11.828 13.828A2 2 0 0110 14H8v-2a2 2 0 01.586-1.414z" strokeLinecap="round" />
             </svg>
           </button>
-          <button
-            type="button"
-            aria-label="Delete task"
-            onClick={() => onDelete(task.id)}
-            className="p-1 text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
-          >
+          <button type="button" aria-label="Delete task" onClick={() => onDelete(task.id)} className="p-1 text-gray-400 hover:text-red-500 cursor-pointer transition-colors">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-3.5 h-3.5">
               <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
             </svg>

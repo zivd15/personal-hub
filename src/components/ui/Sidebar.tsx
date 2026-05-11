@@ -34,23 +34,23 @@ export default function Sidebar({ active, onChange }: SidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-56 shrink-0 h-full bg-white border-r border-[--color-border] px-3 py-6">
+      <aside className="hidden md:flex flex-col w-56 shrink-0 h-full bg-white border-r border-gray-200 px-3 py-6">
         <div className="flex items-center gap-2 px-3 mb-8">
-          <div className="w-7 h-7 rounded-lg bg-[--color-accent] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
             <span className="text-white text-xs font-bold">H</span>
           </div>
-          <span className="font-semibold text-sm tracking-tight">Personal Hub</span>
+          <span className="font-semibold text-sm tracking-tight text-gray-900">Personal Hub</span>
         </div>
-
         <nav className="flex flex-col gap-1">
           {NAV.map(({ view, label, icon }) => (
             <button
               key={view}
+              type="button"
               onClick={() => onChange(view)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                 active === view
-                  ? "bg-[--color-accent-light] text-[--color-accent]"
-                  : "text-[--color-muted] hover:bg-gray-50 hover:text-[--color-foreground]"
+                  ? "bg-indigo-50 text-indigo-600"
+                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
               {icon}
@@ -61,13 +61,14 @@ export default function Sidebar({ active, onChange }: SidebarProps) {
       </aside>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-[--color-border] flex z-50">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 flex z-50">
         {NAV.map(({ view, label, icon }) => (
           <button
             key={view}
+            type="button"
             onClick={() => onChange(view)}
             className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-colors cursor-pointer ${
-              active === view ? "text-[--color-accent]" : "text-[--color-muted]"
+              active === view ? "text-indigo-600" : "text-gray-500"
             }`}
           >
             {icon}
