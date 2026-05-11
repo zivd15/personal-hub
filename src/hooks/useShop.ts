@@ -55,13 +55,14 @@ export function useShop() {
     return () => { supabase.removeChannel(ch); };
   }, [selectedListId, fetchItems]);
 
-  const createList = async (name: string) => {
+  const createList = async (name: string): Promise<boolean> => {
     const { data, error } = await supabase.from("grocery_lists").insert({ name }).select("id").single();
-    if (error || !data) return;
+    if (error || !data) { console.error("createList error:", error); return false; }
     const ids = [...getStoredIds(), data.id];
     saveIds(ids);
     await fetchLists();
     setSelectedListId(data.id);
+    return true;
   };
 
   const joinList = async (code: string): Promise<boolean> => {

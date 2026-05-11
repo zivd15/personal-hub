@@ -20,14 +20,17 @@ export default function ShopView({ itemInputRef }: Props) {
   const [itemQty, setItemQty] = useState("");
   const [itemUnit, setItemUnit] = useState("");
   const [copied, setCopied] = useState(false);
+  const [createError, setCreateError] = useState(false);
 
   const selectedList = lists.find(l => l.id === selectedListId);
 
   const handleCreateList = async () => {
     const name = newListName.trim();
     if (!name) return;
-    await createList(name);
-    setNewListName(""); setShowCreate(false);
+    setCreateError(false);
+    const ok = await createList(name);
+    if (ok) { setNewListName(""); setShowCreate(false); }
+    else setCreateError(true);
   };
 
   const handleJoin = async () => {
@@ -107,17 +110,20 @@ export default function ShopView({ itemInputRef }: Props) {
 
       {/* Create form */}
       {showCreate && (
-        <div className="flex gap-2">
-          <input
-            autoFocus dir="auto"
-            value={newListName}
-            onChange={e => setNewListName(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter") handleCreateList(); if (e.key === "Escape") setShowCreate(false); }}
-            placeholder="List name…"
-            className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-indigo-400"
-          />
-          <button type="button" onClick={handleCreateList} className="px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 cursor-pointer">Create</button>
-          <button type="button" onClick={() => setShowCreate(false)} className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 cursor-pointer">Cancel</button>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex gap-2">
+            <input
+              autoFocus dir="auto"
+              value={newListName}
+              onChange={e => { setNewListName(e.target.value); setCreateError(false); }}
+              onKeyDown={e => { if (e.key === "Enter") handleCreateList(); if (e.key === "Escape") setShowCreate(false); }}
+              placeholder="List name…"
+              className={`flex-1 text-sm border rounded-lg px-3 py-2 outline-none ${createError ? "border-red-300 bg-red-50" : "border-gray-200 focus:border-indigo-400"}`}
+            />
+            <button type="button" onClick={handleCreateList} className="px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 cursor-pointer">Create</button>
+            <button type="button" onClick={() => { setShowCreate(false); setCreateError(false); }} className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 cursor-pointer">Cancel</button>
+          </div>
+          {createError && <p className="text-xs text-red-500 pl-1">Failed to create list — make sure the Supabase tables exist.</p>}
         </div>
       )}
 
