@@ -3,3 +3,15 @@ compatibility_date = "2026-05-11"
 
 [assets]
 directory = "out"
+
+# Declare env vars used by the WhatsApp chatbot Pages Function.
+# Set actual values in Cloudflare Pages → Settings → Environment variables.
+# Never commit real secrets here.
+[vars]
+WHATSAPP_VERIFY_TOKEN = ""
+WHATSAPP_ACCESS_TOKEN = ""
+WHATSAPP_PHONE_NUMBER_ID = ""
+SUPABASE_URL = ""
+SUPABASE_SERVICE_KEY = ""
+ALLOWED_PHONE = ""
+SHOP_LIST_ID = ""
