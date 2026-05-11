@@ -5,11 +5,19 @@ import type { ActiveView } from "@/types";
 const TITLES: Record<ActiveView, string> = {
   notes: "Sticky Notes",
   tasks: "Tasks",
+  shopping: "Shopping",
 };
 
 const SUBTITLES: Record<ActiveView, string> = {
   notes: "Capture ideas, fast",
   tasks: "Stay on top of what matters",
+  shopping: "Lists you can share",
+};
+
+const ADD_LABELS: Record<ActiveView, string> = {
+  notes: "New note",
+  tasks: "Add task",
+  shopping: "Add item",
 };
 
 export default function Header({ active, onAdd }: { active: ActiveView; onAdd: () => void }) {
@@ -27,7 +35,7 @@ export default function Header({ active, onAdd }: { active: ActiveView; onAdd: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-4 h-4">
           <path d="M12 5v14M5 12h14" strokeLinecap="round" />
         </svg>
-        {active === "notes" ? "New note" : "Add task"}
+        {ADD_LABELS[active]}
       </button>
     </header>
   );

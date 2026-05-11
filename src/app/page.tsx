@@ -9,16 +9,18 @@ import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/ui/Header";
 import StickyNoteBoard from "@/components/sticky-notes/StickyNoteBoard";
 import TaskList from "@/components/tasks/TaskList";
+import ShopView from "@/components/shopping/ShopView";
 
 export default function Dashboard() {
   const [view, setView] = useState<ActiveView>("tasks");
   const [newNoteId, setNewNoteId] = useState<string | null>(null);
   const taskInputRef = useRef<HTMLInputElement>(null);
+  const shopItemInputRef = useRef<HTMLInputElement>(null);
 
   const { notes, loading: notesLoading, addNote, updateNote, deleteNote, changeNoteColor } = useNotes();
   const { tasks, loading: tasksLoading, addTask, toggleTask, updateTask, deleteTask } = useTasks();
 
-  const loading = view === "notes" ? notesLoading : tasksLoading;
+  const loading = view === "notes" ? notesLoading : view === "tasks" ? tasksLoading : false;
 
   const handleAddNote = async () => {
     const id = await addNote("yellow");
@@ -26,8 +28,10 @@ export default function Dashboard() {
     setTimeout(() => setNewNoteId(null), 1000);
   };
 
-  const handleAddTaskFocus = () => {
-    taskInputRef.current?.focus();
+  const handleAdd = () => {
+    if (view === "notes") handleAddNote();
+    else if (view === "tasks") taskInputRef.current?.focus();
+    else shopItemInputRef.current?.focus();
   };
 
   if (!isConfigured) {
@@ -55,7 +59,7 @@ export default function Dashboard() {
       <Sidebar active={view} onChange={setView} />
 
       <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-        <Header active={view} onAdd={view === "notes" ? handleAddNote : handleAddTaskFocus} />
+        <Header active={view} onAdd={handleAdd} />
 
         <main className="flex-1 overflow-y-auto px-6 py-6 pb-24 md:pb-6">
           {loading ? (
@@ -70,7 +74,7 @@ export default function Dashboard() {
               onDelete={deleteNote}
               onColorChange={changeNoteColor}
             />
-          ) : (
+          ) : view === "tasks" ? (
             <TaskList
               tasks={tasks}
               inputRef={taskInputRef}
@@ -82,6 +86,8 @@ export default function Dashboard() {
               onDelete={deleteTask}
               onUpdate={updateTask}
             />
+          ) : (
+            <ShopView itemInputRef={shopItemInputRef} />
           )}
         </main>
       </div>
