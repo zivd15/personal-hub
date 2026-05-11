@@ -5,12 +5,14 @@ import TaskItem from "./TaskItem";
 
 interface Props {
   tasks: Task[];
+  editingId: string | null;
+  onEditingChange: (id: string | null) => void;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
   onUpdate: (id: string, text: string, dueDate: string | null) => void;
 }
 
-export default function TaskList({ tasks, onToggle, onDelete, onUpdate }: Props) {
+export default function TaskList({ tasks, editingId, onEditingChange, onToggle, onDelete, onUpdate }: Props) {
   const open = tasks.filter((t) => !t.completed);
   const done = tasks.filter((t) => t.completed);
 
@@ -35,7 +37,15 @@ export default function TaskList({ tasks, onToggle, onDelete, onUpdate }: Props)
           </p>
           <div className="flex flex-col gap-2">
             {open.map((task) => (
-              <TaskItem key={task.id} task={task} onToggle={onToggle} onDelete={onDelete} onUpdate={onUpdate} />
+              <TaskItem
+                key={task.id}
+                task={task}
+                forceEdit={editingId === task.id}
+                onEditingChange={onEditingChange}
+                onToggle={onToggle}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
+              />
             ))}
           </div>
         </section>
@@ -48,7 +58,15 @@ export default function TaskList({ tasks, onToggle, onDelete, onUpdate }: Props)
           </p>
           <div className="flex flex-col gap-2">
             {done.map((task) => (
-              <TaskItem key={task.id} task={task} onToggle={onToggle} onDelete={onDelete} onUpdate={onUpdate} />
+              <TaskItem
+                key={task.id}
+                task={task}
+                forceEdit={editingId === task.id}
+                onEditingChange={onEditingChange}
+                onToggle={onToggle}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
+              />
             ))}
           </div>
         </section>

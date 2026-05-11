@@ -12,11 +12,17 @@ import TaskList from "@/components/tasks/TaskList";
 
 export default function Dashboard() {
   const [view, setView] = useState<ActiveView>("tasks");
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   const { notes, loading: notesLoading, addNote, updateNote, deleteNote, changeNoteColor } = useNotes();
   const { tasks, loading: tasksLoading, addTask, toggleTask, updateTask, deleteTask } = useTasks();
 
   const loading = view === "notes" ? notesLoading : tasksLoading;
+
+  const handleAddTask = async () => {
+    const id = await addTask();
+    if (id) setEditingTaskId(id);
+  };
 
   if (!isConfigured) {
     return (
@@ -43,7 +49,7 @@ export default function Dashboard() {
       <Sidebar active={view} onChange={setView} />
 
       <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-        <Header active={view} onAdd={view === "notes" ? () => addNote("yellow") : addTask} />
+        <Header active={view} onAdd={view === "notes" ? () => addNote("yellow") : handleAddTask} />
 
         <main className="flex-1 overflow-y-auto px-6 py-6 pb-24 md:pb-6">
           {loading ? (
@@ -60,6 +66,8 @@ export default function Dashboard() {
           ) : (
             <TaskList
               tasks={tasks}
+              editingId={editingTaskId}
+              onEditingChange={setEditingTaskId}
               onToggle={(id) => {
                 const task = tasks.find((t) => t.id === id);
                 if (task) toggleTask(id, !task.completed);

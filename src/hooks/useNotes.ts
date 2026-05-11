@@ -30,18 +30,22 @@ export function useNotes() {
 
   const addNote = async (color: NoteColor) => {
     await supabase.from("notes").insert({ content: "", color });
+    await fetchNotes();
   };
 
   const updateNote = async (id: string, content: string) => {
     await supabase.from("notes").update({ content, updated_at: new Date().toISOString() }).eq("id", id);
+    await fetchNotes();
   };
 
   const deleteNote = async (id: string) => {
     await supabase.from("notes").delete().eq("id", id);
+    await fetchNotes();
   };
 
   const changeNoteColor = async (id: string, color: NoteColor) => {
     await supabase.from("notes").update({ color }).eq("id", id);
+    await fetchNotes();
   };
 
   return { notes, loading, addNote, updateNote, deleteNote, changeNoteColor };

@@ -28,20 +28,29 @@ export function useTasks() {
     return () => { supabase.removeChannel(channel); };
   }, [fetchTasks]);
 
-  const addTask = async () => {
-    await supabase.from("tasks").insert({ text: "New task", completed: false, due_date: null });
+  const addTask = async (): Promise<string | null> => {
+    const { data } = await supabase
+      .from("tasks")
+      .insert({ text: "New task", completed: false, due_date: null })
+      .select("id")
+      .single();
+    await fetchTasks();
+    return data?.id ?? null;
   };
 
   const toggleTask = async (id: string, completed: boolean) => {
     await supabase.from("tasks").update({ completed }).eq("id", id);
+    await fetchTasks();
   };
 
   const updateTask = async (id: string, text: string, due_date: string | null) => {
     await supabase.from("tasks").update({ text, due_date }).eq("id", id);
+    await fetchTasks();
   };
 
   const deleteTask = async (id: string) => {
     await supabase.from("tasks").delete().eq("id", id);
+    await fetchTasks();
   };
 
   return { tasks, loading, addTask, toggleTask, updateTask, deleteTask };

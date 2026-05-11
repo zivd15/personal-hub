@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Task } from "@/types";
 
 interface Props {
   task: Task;
+  forceEdit?: boolean;
+  onEditingChange: (id: string | null) => void;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
   onUpdate: (id: string, text: string, dueDate: string | null) => void;
@@ -21,14 +23,37 @@ function formatDue(date: string): { label: string; urgent: boolean } {
   return { label: due.toLocaleDateString("en-US", { month: "short", day: "numeric" }), urgent: false };
 }
 
-export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) {
+export default function TaskItem({ task, forceEdit, onEditingChange, onToggle, onDelete, onUpdate }: Props) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(task.text);
   const [dueDate, setDueDate] = useState(task.due_date ?? "");
 
+  useEffect(() => {
+    if (forceEdit) {
+      setText(task.text);
+      setDueDate(task.due_date ?? "");
+      setEditing(true);
+    }
+  }, [forceEdit, task.text, task.due_date]);
+
+  const startEditing = () => {
+    setText(task.text);
+    setDueDate(task.due_date ?? "");
+    setEditing(true);
+    onEditingChange(task.id);
+  };
+
   const commit = () => {
     onUpdate(task.id, text.trim() || task.text, dueDate || null);
     setEditing(false);
+    onEditingChange(null);
+  };
+
+  const cancel = () => {
+    setText(task.text);
+    setDueDate(task.due_date ?? "");
+    setEditing(false);
+    onEditingChange(null);
   };
 
   const due = task.due_date ? formatDue(task.due_date) : null;
@@ -62,7 +87,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
               aria-label="Task text"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && commit()}
+              onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") cancel(); }}
               className="text-sm outline-none border-b border-indigo-600 pb-0.5 w-full bg-transparent"
             />
             <div className="flex items-center gap-2">
@@ -74,13 +99,13 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
                 className="text-xs text-gray-500 outline-none bg-transparent cursor-pointer"
               />
               <button type="button" onClick={commit} className="text-xs text-indigo-600 font-medium cursor-pointer hover:underline">Save</button>
-              <button type="button" onClick={() => { setText(task.text); setDueDate(task.due_date ?? ""); setEditing(false); }} className="text-xs text-gray-500 cursor-pointer hover:underline">Cancel</button>
+              <button type="button" onClick={cancel} className="text-xs text-gray-500 cursor-pointer hover:underline">Cancel</button>
             </div>
           </div>
         ) : (
           <>
             <p
-              onClick={() => !task.completed && setEditing(true)}
+              onClick={() => !task.completed && startEditing()}
               className={`text-sm leading-snug transition-colors ${
                 task.completed ? "line-through text-gray-400" : "text-gray-900 cursor-text"
               }`}
@@ -101,7 +126,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
       {/* Actions */}
       {!editing && (
         <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
-          <button type="button" aria-label="Edit task" onClick={() => setEditing(true)} className="p-1 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors">
+          <button type="button" aria-label="Edit task" onClick={startEditing} className="p-1 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-3.5 h-3.5">
               <path d="M15.232 5.232l3.536 3.536M9 11l6.586-6.586a2 2 0 012.828 2.828L11.828 13.828A2 2 0 0110 14H8v-2a2 2 0 01.586-1.414z" strokeLinecap="round" />
             </svg>
