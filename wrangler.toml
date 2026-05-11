@@ -1,2 +1,5 @@
 name = "personal-hub"
-pages_build_output_dir = "out"
+compatibility_date = "2026-05-11"
+
+[assets]
+directory = "out"
